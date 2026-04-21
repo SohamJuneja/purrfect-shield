@@ -8,6 +8,7 @@ const path = require('path');
 const os = require('os'); // NEW: Import OS module
 const readline = require('readline');
 const { analyzeContract } = require('./analyzer');
+const { simulateTrade } = require('./simulator'); // <-- ADD THIS LINE
 
 // NEW: Save to the user's home directory so it's stateful across reboots
 const CONFIG_PATH = path.join(os.homedir(), '.purrfect-shield-config.json');
@@ -122,7 +123,26 @@ program
             // In warning mode, we don't process.exit(1) so the agent can technically still push it through if the user demands it.
         }
     } else {
-        console.log(chalk.green(`\n[VERIFIED] Contract is safe (${result.score}/100). Proceeding to TEE Signature...`));
+        console.log(chalk.green(`\n[VERIFIED] Contract code is safe (${result.score}/100).`));
+    }
+
+    // ==========================================
+    // NEW: TRANSACTION SIMULATION
+    // ==========================================
+    console.log(chalk.gray(`\nStep 2: Running Live On-Chain Trade Simulation...`));
+    const sim = await simulateTrade(contractAddress, amount);
+
+    if (!sim.success) {
+        console.log(chalk.red.bold(`\n[ABORT] TRADE SIMULATION FAILED.`));
+        console.log(chalk.red(`Reason: ${sim.message}`));
+
+        if (config.securityTier === 'strict') {
+            console.log(chalk.red(`[STRICT MODE] TEE Execution blocked due to failed simulation.`));
+            process.exit(1);
+        }
+    } else {
+        console.log(chalk.green(`[SIMULATION PASSED] Expected Output: ~${parseFloat(sim.expectedOutput).toFixed(4)} ${sim.symbol}`));
+        console.log(chalk.green(`Proceeding to TEE Signature...\n`));
     }
     
     // THE EXECUTION
