@@ -1,0 +1,22 @@
+{
+  "name": "purrfect-shield",
+  "version": "1.0.0",
+  "description": "TEE-Secured Contract Forensics Skill for Purrfect Claw",
+  "main": "index.js",
+  "bin": {
+    "shield": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["purrfect-claw", "web3", "security"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "chalk": "^4.1.2",
+    "commander": "^12.0.0",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.11.1"
+  }
+}
