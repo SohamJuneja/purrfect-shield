@@ -142,8 +142,18 @@ program
         }
     } else {
         console.log(chalk.green(`[SIMULATION PASSED] Expected Output: ~${parseFloat(sim.expectedOutput).toFixed(4)} ${sim.symbol}`));
-        console.log(chalk.green(`Proceeding to TEE Signature...\n`));
     }
+
+    // ==========================================
+    // NEW: AUTO-SLIPPAGE CALCULATOR
+    // ==========================================
+    console.log(chalk.gray(`\nStep 3: Calculating Optimal Trade Parameters...`));
+    const baseSlippage = 0.5; // Standard 0.5% base slippage
+    const tokenTax = parseFloat(result.buyTax) || 0;
+    const optimalSlippage = baseSlippage + tokenTax;
+    
+    console.log(chalk.cyan(`⚙️ Auto-Slippage Set: ${optimalSlippage.toFixed(1)}% `) + chalk.gray(`(0.5% Base + ${tokenTax.toFixed(1)}% Contract Tax)`));
+    console.log(chalk.green(`\nProceeding to TEE Signature...`));
     
     // THE EXECUTION
     try {
